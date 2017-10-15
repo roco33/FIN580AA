@@ -81,9 +81,9 @@ def Sim1(r,corr,sd,n_sim,T,t,intBlnc,cashIn,withdraw,Alloc):
 #plt.show()
 
 
-step = 11
-x = np.linspace(0, 1, step)
-y = np.linspace(0, 1, step)
+step = 21
+x = np.linspace(0, 0.2, step)
+y = np.linspace(0, 0.2, step)
 xv, yv = np.meshgrid(x, y)
 z = np.zeros((step,step))
 for k in range(step):
