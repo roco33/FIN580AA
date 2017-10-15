@@ -24,12 +24,12 @@ n_sim = 10000
 
 # search range
 xmin = 0
-xmax = 0.2
+xmax = 1
 ymin = 0
-ymax = 0.2
+ymax = 1
 # search step
-xstep = 0.01
-ystep = 0.01
+xstep = 0.1
+ystep = 0.1
 
 
 # variable
@@ -80,7 +80,7 @@ def Sim1(SimRet,n_sim,T,t,intBlnc,cashIn,withdraw,Alloc):
         else:
             SimLives[i,] = SimLives[i-1,]*(1+SimRet[i-1,])-withdraw*np.ones(n_sim)
 #            SimLives[i,] = SimLives[i-1,]*(1+SimRet[i-1,])
-    return(sum(SimLives[T,:]<=0)/n_sim)
+    return(sum(SimLives[T,:]>0)/n_sim)
 #    return(np.percentile(SimLives[T,:],10))
 
 #plt.plot(np.arange(30,96),SimLives)
@@ -100,8 +100,9 @@ for k in range(xn):
     for l in range(yn):
         Alloc = np.array([xv[k,l],yv[k,l],1-xv[k,l]-yv[k,l]])
         z[k,l] = Sim1(SimRet,n_sim,T,t,intBlnc,cashIn,withdraw,Alloc)
+z[xv+yv>1] = np.nan
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
-surf = ax.plot_surface(xv, yv, z ,cmap=cm.coolwarm)
+surf = ax.plot_surface(xv, yv, z ,cmap=cm.coolwarm,vmin=-1, vmax=1)
 plt.show()
