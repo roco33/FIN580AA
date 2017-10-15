@@ -104,5 +104,8 @@ z[xv+yv>1] = np.nan
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
-surf = ax.plot_surface(xv, yv, z ,cmap=cm.coolwarm,vmin=-1, vmax=1)
+surf = ax.plot_surface(xv, yv, z ,cmap=cm.OrRd,vmin=np.nanmin(z), vmax=np.nanmax(z))
+ax.set_xlabel('Stock')
+ax.set_ylabel('Bond')
+ax.set_zlabel('Probability of non-negative wealth')
 plt.show()
