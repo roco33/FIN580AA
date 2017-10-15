@@ -22,8 +22,15 @@ sd = np.array([0.2,0.07,0.02]).reshape((3,1))
 # Number of simulations
 n_sim = 10000
 
-fig = plt.figure()
-ax = fig.gca(projection='3d')
+# search range
+xmin = 0
+xmax = 0.2
+ymin = 0
+ymax = 0.2
+# search step
+xstep = 0.01
+ystep = 0.01
+
 
 # variable
 # Remaining life 95-30
@@ -39,25 +46,27 @@ withdraw = 30000
 Alloc = np.array([0.4,0.5,0.1]).reshape((3,1))
     
 
-def Sim1(r,corr,sd,n_sim,T,t,intBlnc,cashIn,withdraw,Alloc):
-    # calculations
-    # covariance matrix
-    cov = np.dot(sd, np.transpose(sd)) * corr
-    nCol=cov.shape[1]
-    # Generate a matrix of simulated normal standard returns
-    SimRet = np.random.normal(loc=0,scale=1,size=(int(n_sim/2*T),nCol))
-    # variance reduction technique
-    TempRet = -SimRet
-    SimRet = np.concatenate((SimRet,TempRet),axis=0)
-    # Make data lognormal
-    SimRet = np.exp(SimRet)
-    # Change variance and covariance of random numbers
-    SDMat = np.linalg.cholesky(cov)
-    SimRet = SimRet@SDMat
-    # Change mean of random numbers
-    ColAvg = np.mean(SimRet,axis=0)
-    SimRet = SimRet - ColAvg
-    SimRet = SimRet + r.T
+# calculations
+# covariance matrix
+cov = np.dot(sd, np.transpose(sd)) * corr
+nCol=cov.shape[1]
+# Generate a matrix of simulated normal standard returns
+SimRet = np.random.normal(loc=0,scale=1,size=(int(n_sim/2*T),nCol))
+# variance reduction technique
+TempRet = -SimRet
+SimRet = np.concatenate((SimRet,TempRet),axis=0)
+# Make data lognormal
+SimRet = np.exp(SimRet)
+# Change variance and covariance of random numbers
+SDMat = np.linalg.cholesky(cov)
+SimRet = SimRet@SDMat
+# Change mean of random numbers
+ColAvg = np.mean(SimRet,axis=0)
+SimRet = SimRet - ColAvg
+SimRet = SimRet + r.T
+
+
+def Sim1(SimRet,n_sim,T,t,intBlnc,cashIn,withdraw,Alloc):
     # Assuming annual rebalancing, multiply random returns by allocation and obtain a vector of portfolio returns
     SimRet = SimRet@Alloc
     # Reshape the vector into a matrix of T rows
@@ -81,15 +90,18 @@ def Sim1(r,corr,sd,n_sim,T,t,intBlnc,cashIn,withdraw,Alloc):
 #plt.show()
 
 
-step = 21
-x = np.linspace(0, 0.2, step)
-y = np.linspace(0, 0.2, step)
+xn = int((xmax-xmin)/xstep+1)
+yn = int((ymax-ymin)/ystep+1)
+x = np.linspace(xmin, xmax, xn)
+y = np.linspace(ymin, ymax, yn)
 xv, yv = np.meshgrid(x, y)
-z = np.zeros((step,step))
-for k in range(step):
-    for l in range(step):
+z = np.zeros((xn,yn))
+for k in range(xn):
+    for l in range(yn):
         Alloc = np.array([xv[k,l],yv[k,l],1-xv[k,l]-yv[k,l]])
-        z[k,l] = Sim1(r,corr,sd,n_sim,T,t,intBlnc,cashIn,withdraw,Alloc)
+        z[k,l] = Sim1(SimRet,n_sim,T,t,intBlnc,cashIn,withdraw,Alloc)
 
+fig = plt.figure()
+ax = fig.gca(projection='3d')
 surf = ax.plot_surface(xv, yv, z ,cmap=cm.coolwarm)
 plt.show()
