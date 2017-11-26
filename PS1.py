@@ -38,7 +38,7 @@ ystep = 0.1
 # variable
 # Remaining life 95-30
 T = 65
-t = 30
+t = 35
 # Initial balance
 intBlnc = 100000
 # Cash infloe
@@ -83,8 +83,8 @@ def Sim1(SimRet,n_sim,T,t,intBlnc,cashIn,withdraw,Alloc):
         else:
             SimLives[i,] = SimLives[i-1,]*(1+SimRet[i-1,])-withdraw*np.ones(n_sim)
 #            SimLives[i,] = SimLives[i-1,]*(1+SimRet[i-1,])
-#    return(sum(SimLives[T,:]>0)/n_sim)
-    return(np.percentile(SimLives[T,:],5))
+    return(sum(SimLives[T,:]>0)/n_sim)
+#    return(np.percentile(SimLives[T,:],5))
 
 #plt.plot(np.arange(30,96),SimLives)
 #plt.title('Simulation of future wealth')
