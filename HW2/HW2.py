@@ -6,9 +6,22 @@ Created on Sun Nov 26 10:12:19 2017
 """
 
 import pandas as pd
+import numpy as np
 
 
-file = 'Data for HW 2 Fall 2017.csv'
-skip = [i for i in range(9)]
-skip.append(10)
-data = pd.read_csv(file,skiprows = skip,usecols = [i for i in range(9,17,1)] )
+
+def importData():
+    # asset names set
+    asset = ['Russell 1000', 'Russell 2000', 'BofA Merrill Lynch US Corp Master', 'BofA Merrill Lynch US High Yield', '3-Month Treasury Bill', 'Consumer Price Index for All Urban Consumers', 'EAFE Standard (Large+Mid Cap)', 'EM (EMERGING MARKETS) Standard (Large+Mid Cap)']
+    # file name
+    file = 'Data for HW 2 Fall 2017.csv'
+    # skip rows
+    skip = [i for i in range(9)]
+#    skip.append(10)
+    # read csv into dataframe
+    rawData = pd.read_csv(file,skiprows = skip,usecols = [i for i in range(1,9,1)])
+    rawData.columns = asset
+    return rawData
+
+
+data = importData()
