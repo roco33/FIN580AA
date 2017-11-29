@@ -7,7 +7,7 @@ Created on Sun Nov 26 10:12:19 2017
 
 import pandas as pd
 import numpy as np
-import scipy.optimize as sco
+import cvxopt as opt
 
 
 
@@ -96,10 +96,3 @@ cov = data.cov()
 
 
 
-def optimize_portfoio(exp_ret, cov):
-    
-    n = len(exp_ret)
-    P = matrix(cov)
-    
-    
-    return 
