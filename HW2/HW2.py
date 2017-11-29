@@ -7,7 +7,8 @@ Created on Sun Nov 26 10:12:19 2017
 
 import pandas as pd
 import numpy as np
-import cvxopt as opt
+import matplotlib.pyplot as plt
+from optPort import optimize_portfolio, stats
 
 
 
@@ -81,18 +82,36 @@ def RP(): # expected return of fixed income index
     
 
 
+def main():
+    # expected return
+    exp_ret_e = GK()
+    exp_ret = exp_ret_e[['Russell 1000','Russell 2000']].append(RP())
+    exp_ret = exp_ret.append(pd.Series([0.02], index = ['3-Month Treasury Bill']))
+    exp_ret = exp_ret.append(exp_ret_e[['MSCI EAFE', 'MSCI EM']])    
+    # covariance
+    [data, inflation] = import_data()
+#    sd = data.std()
+    cov = data.cov()
+    # optimization
+    r_min = np.linspace(0,0.1)
+    mu_list = np.array([])
+    std_list = np.array([])
+    
+    for r in r_min:
+        try:
+            x = np.array(optimize_portfolio(exp_ret,cov,r)['x'])
+            [mu,std] = stats(x,exp_ret,cov,r)
+            mu_list = np.append(mu_list, mu)
+            std_list = np.append(std_list, std)
+        except:
+            break
+    
+    plt.plot(std_list,mu_list)
+    plt.show()
+    
 
-exp_ret_e = GK()
-exp_ret = exp_ret_e[['Russell 1000','Russell 2000']].append(RP())
-exp_ret = exp_ret.append(pd.Series([0.02], index = ['3-Month Treasury Bill']))
-exp_ret = exp_ret.append(exp_ret_e[['MSCI EAFE', 'MSCI EM']])
 
 
-
-
-[data, inflation] = import_data()
-sd = data.std()
-cov = data.cov()
-
-
+if __name__ == '__main__':
+    main()
 
