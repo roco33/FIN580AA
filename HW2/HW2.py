@@ -8,7 +8,7 @@ Created on Sun Nov 26 10:12:19 2017
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from optPort import optimize_portfolio, stats
+from optPort import efficient_frontier
 
 
 
@@ -39,7 +39,7 @@ def import_data():
 
 
 
-def GK(): # expected return of equity index
+def GK_e(): # expected return of equity index
     
     GK_data = np.array([[0.025, 23, 19, 0.06], 
                [0.016, 32, 23, 0.07], 
@@ -60,7 +60,7 @@ def GK(): # expected return of equity index
 
 
 
-def RP(): # expected return of fixed income index
+def GK_f(): # expected return of fixed income index
     
     RP_data = np.array([[0.02,0.045,0.01,0.01,0.01,0.6],
                [0.02,0.045,0.035,0.05,0.04,0.6]]).T
@@ -68,12 +68,12 @@ def RP(): # expected return of fixed income index
                 'Default Rate', 'Recovery Rate']
     RP_col = ['BAML US Corporate Master', 'BAML US High Yield']
     RP_input = pd.DataFrame(RP_data, index = RP_index, columns = RP_col)
-    
+    # duration of 3
     exp_ret_fi = ((RP_input.loc['Target Yield',:] 
-                 - RP_input.loc['Treasury Yield',:])/10 
+                 - RP_input.loc['Treasury Yield',:])/10 # use compounded return
                  + RP_input.loc['Treasury Yield',:] 
                  + (RP_input.loc['Target Spread',:] 
-                 - RP_input.loc['Spread',:])/10 
+                 - RP_input.loc['Spread',:])/10 # use compunded return
                  + RP_input.loc['Spread',:] 
                  + RP_input.loc['Default Rate',:] 
                  * RP_input.loc['Recovery Rate',:])
@@ -84,31 +84,36 @@ def RP(): # expected return of fixed income index
 
 def main():
     # expected return
-    exp_ret_e = GK()
-    exp_ret = exp_ret_e[['Russell 1000','Russell 2000']].append(RP())
+    exp_ret_e = GK_e()
+    exp_ret = exp_ret_e[['Russell 1000','Russell 2000']].append(GK_f())
     exp_ret = exp_ret.append(pd.Series([0.02], index = ['3-Month Treasury Bill']))
     exp_ret = exp_ret.append(exp_ret_e[['MSCI EAFE', 'MSCI EM']])    
     # covariance
     [data, inflation] = import_data()
-#    sd = data.std()
+    sd = data.std()
     cov = data.cov()
+    
     # optimization
-    r_min = np.linspace(0,0.1)
-    mu_list = np.array([])
-    std_list = np.array([])
+    r_min = np.linspace(0,0.1,100)
     
-    for r in r_min:
-        try:
-            x = np.array(optimize_portfolio(exp_ret,cov,r)['x'])
-            [mu,std] = stats(x,exp_ret,cov,r)
-            mu_list = np.append(mu_list, mu)
-            std_list = np.append(std_list, std)
-        except:
-            break
+    [mu,std,w_cum] = efficient_frontier(exp_ret, cov, r_min)
     
-    plt.plot(std_list,mu_list)
+    plt.plot(std,mu)
     plt.show()
+#    plt.figure()
+#    plt.plot(std_list,w_list)
     
+    for i in range(50):
+        # add randomness
+        exp_ret1 = exp_ret + np.random.standard_normal(size = sd.shape) * sd /10
+        # optimization
+        [mu, std, w_cum] = efficient_frontier(exp_ret1, cov, r_min)
+        plt.plot(std,mu)
+    
+    
+    plt.show()
+#    plt.figure()
+#    plt.plot(std,w_cum)
 
 
 
