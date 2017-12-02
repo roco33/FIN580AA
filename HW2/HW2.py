@@ -94,7 +94,7 @@ def main():
     cov = data.cov()
     
     # optimization
-    r_min = np.linspace(0,0.1,100)
+    r_min = np.linspace(0,0.2,100)
     
     [mu,std,w_cum] = efficient_frontier(exp_ret, cov, r_min)
     
