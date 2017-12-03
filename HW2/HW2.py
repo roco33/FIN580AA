@@ -39,62 +39,71 @@ def import_data():
 
 
 
-def GK_e(): # expected return of equity index
-    
-    GK_data = np.array([[0.025, 23, 19, 0.06], 
-               [0.016, 32, 23, 0.07], 
-               [0.035, 19, 21, 0.07],
-               [0.025, 16, 15, 0.1]]).T
-    GK_index = ['Dividend Yield', 'PE Current', 'PE Median', 'EPS Growth']
-    GK_col = ['Russell 1000', 'Russell 2000', 'MSCI EAFE', 'MSCI EM']
-    GK_input = pd.DataFrame(GK_data, index = GK_index, columns = GK_col)
-    exp_inflation = 0.02
-    
-    exp_ret_e = ((GK_input.loc['Dividend Yield',:] 
-                 + exp_inflation
-                 + GK_input.loc['EPS Growth',:]/10) 
-                 * ((GK_input.loc['PE Current',:] 
-                 / GK_input.loc['PE Median',:]-1)/10+1))
-    
-    return exp_ret_e
-
-
-
-def GK_f(): # expected return of fixed income index
-    
-    RP_data = np.array([[0.02,0.045,0.01,0.01,0.01,0.6],
-               [0.02,0.045,0.035,0.05,0.04,0.6]]).T
-    RP_index = ['Treasury Yield', 'Target Yield', 'Spread', 'Target Spread',
-                'Default Rate', 'Recovery Rate']
-    RP_col = ['BAML US Corporate Master', 'BAML US High Yield']
-    RP_input = pd.DataFrame(RP_data, index = RP_index, columns = RP_col)
-    # duration of 3
-    exp_ret_fi = ((RP_input.loc['Target Yield',:] 
-                 - RP_input.loc['Treasury Yield',:])/10 # use compounded return
-                 + RP_input.loc['Treasury Yield',:] 
-                 + (RP_input.loc['Target Spread',:] 
-                 - RP_input.loc['Spread',:])/10 # use compunded return
-                 + RP_input.loc['Spread',:] 
-                 + RP_input.loc['Default Rate',:] 
-                 * RP_input.loc['Recovery Rate',:])
-    
-    return exp_ret_fi
+#def GK_e(): # expected return of equity index
+#    
+#    GK_data = np.array([[0.025, 23, 19, 0.06], 
+#               [0.016, 32, 23, 0.07], 
+#               [0.035, 19, 21, 0.07],
+#               [0.025, 16, 15, 0.1]]).T
+#    GK_index = ['Dividend Yield', 'PE Current', 'PE Median', 'EPS Growth']
+#    GK_col = ['Russell 1000', 'Russell 2000', 'MSCI EAFE', 'MSCI EM']
+#    GK_input = pd.DataFrame(GK_data, index = GK_index, columns = GK_col)
+#    exp_inflation = 0.02
+#    
+#    exp_ret_e = ((GK_input.loc['Dividend Yield',:] 
+#                 + exp_inflation
+#                 + GK_input.loc['EPS Growth',:]/10) 
+#                 * ((GK_input.loc['PE Current',:] 
+#                 / GK_input.loc['PE Median',:]-1)/10+1))
+#    
+#    return exp_ret_e
+#
+#
+#
+#def GK_f(): # expected return of fixed income index
+#    
+#    RP_data = np.array([[0.02,0.045,0.01,0.01,0.01,0.6],
+#               [0.02,0.045,0.035,0.05,0.04,0.6]]).T
+#    RP_index = ['Treasury Yield', 'Target Yield', 'Spread', 'Target Spread',
+#                'Default Rate', 'Recovery Rate']
+#    RP_col = ['BAML US Corporate Master', 'BAML US High Yield']
+#    RP_input = pd.DataFrame(RP_data, index = RP_index, columns = RP_col)
+#    # duration of 3
+#    exp_ret_fi = ((RP_input.loc['Target Yield',:] 
+#                 - RP_input.loc['Treasury Yield',:])/10 # use compounded return
+#                 + RP_input.loc['Treasury Yield',:] 
+#                 + (RP_input.loc['Target Spread',:] 
+#                 - RP_input.loc['Spread',:])/10 # use compunded return
+#                 + RP_input.loc['Spread',:] 
+#                 + RP_input.loc['Default Rate',:] 
+#                 * RP_input.loc['Recovery Rate',:])
+#    
+#    return exp_ret_fi
     
 
 
 def main():
     # expected return
-    exp_ret_e = GK_e()
-    exp_ret = exp_ret_e[['Russell 1000','Russell 2000']].append(GK_f())
-    exp_ret = exp_ret.append(pd.Series([0.02], index = ['3-Month Treasury Bill']))
-    exp_ret = exp_ret.append(exp_ret_e[['MSCI EAFE', 'MSCI EM']])    
+#    exp_ret_e = GK_e()
+#    exp_ret = exp_ret_e[['Russell 1000','Russell 2000']].append(GK_f())
+#    exp_ret = exp_ret.append(pd.Series([0.02], index = ['3-Month Treasury Bill']))
+#    exp_ret = exp_ret.append(exp_ret_e[['MSCI EAFE', 'MSCI EM']])
+    
+    # input expected return
+    exp_ret_data = np.array([0.1051,0.0732,0.0297,0.0769,0.0185,0.1351,0.1386])
+    exp_ret_index = ['Russell 1000', 'Russell 2000', 'BAML US Corporate Master', 
+             'BAML US High Yield', '3-Month Treasury Bill', 'MSCI EAFE', 
+             'MSCI EM']
+    exp_ret = pd.Series(exp_ret_data,index = exp_ret_index)
+    
+    
     # covariance
     [data, inflation] = import_data()
     sd = data.std()
     cov = data.cov()
     
     # optimization
-    r_min = np.linspace(0,0.12,100)
+    r_min = np.linspace(0,0.2,100)
     
     [mu,std,w_cum] = efficient_frontier(exp_ret, cov, r_min)
     std_lower = np.amin(std)
@@ -108,7 +117,7 @@ def main():
     
     stat = np.zeros([1,9]) # 1 + 1 + n
     
-    for i in range(5):
+    for i in range(50):
         # add randomness
         exp_ret1 = exp_ret + np.random.standard_normal(size = sd.shape) * sd /10
         # optimization
@@ -140,6 +149,12 @@ def main():
         std = np.append(std,std_1)
     
     plt.plot(std, mu, 'r--')
+    
+    plt.figure()
+    plt.stackplot(std,w.T)
+    plt.legend(['Russell 1000', 'Russell 2000', 'BAML US Corporate Master', 
+             'BAML US High Yield', '3-Month Treasury Bill', 'MSCI EAFE', 
+             'MSCI EM'])
     plt.show()
     
 
