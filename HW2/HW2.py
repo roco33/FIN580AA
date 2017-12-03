@@ -8,7 +8,7 @@ Created on Sun Nov 26 10:12:19 2017
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from optPort import efficient_frontier
+from optPort import efficient_frontier,stats
 
 
 
@@ -94,26 +94,58 @@ def main():
     cov = data.cov()
     
     # optimization
-    r_min = np.linspace(0,0.2,100)
+    r_min = np.linspace(0,0.12,100)
     
     [mu,std,w_cum] = efficient_frontier(exp_ret, cov, r_min)
+    std_lower = np.amin(std)
+    std_upper = np.amax(std)
+    
     
     plt.plot(std,mu)
     plt.show()
 #    plt.figure()
 #    plt.plot(std_list,w_list)
     
-    for i in range(50):
+    stat = np.zeros([1,9]) # 1 + 1 + n
+    
+    for i in range(5):
         # add randomness
         exp_ret1 = exp_ret + np.random.standard_normal(size = sd.shape) * sd /10
         # optimization
-        [mu, std, w_cum] = efficient_frontier(exp_ret1, cov, r_min)
-        plt.plot(std,mu)
+        [mu, std, w] = efficient_frontier(exp_ret1, cov, r_min)
+        stat_1 = np.concatenate((np.array([mu]).T,np.array([std]).T,w),axis = 1)
+        stat = np.concatenate((stat, stat_1), axis = 0)
+#        plt.plot(std,mu)
+
+    stat = stat[1:,:]
+    stat = stat[np.argsort(stat[:,1])]
+    stat = stat[(stat[:,1]<=std_upper) & (stat[:,1]>=std_lower)]
     
+    std_space = np.geomspace(std_lower, std_upper,30)
+
     
+    w = np.array([]) # n
+    for i in range(len(std_space)-1):
+        w_1 = np.mean(stat[(stat[:,1]>= std_space[i]) & (stat[:,1] < std_space[i+1]),2:],axis=0)
+#        print(w_1)
+        w = np.append(w,w_1)
+        
+    w = np.reshape(w, (-1,7))
+    mu = np.array([])
+    std = np.array([])
+    
+    for j in range(w.shape[0]):
+        [mu_1,std_1,w_1] = stats(w[j,:],exp_ret,cov)
+        mu = np.append(mu,mu_1)
+        std = np.append(std,std_1)
+    
+    plt.plot(std, mu, 'r--')
     plt.show()
-#    plt.figure()
-#    plt.plot(std,w_cum)
+    
+
+    
+
+
 
 
 

@@ -62,14 +62,12 @@ def optimize_portfolio(exp_ret, cov, r_min):
 #r_min = 0
 
 
-def stats(x,exp_ret,cov,r_min):
-    x_cum = x
+def stats(x,exp_ret,cov):
+    
     mu = np.dot(np.transpose(x),np.array(exp_ret))
     std = np.sqrt(np.dot(np.dot(np.transpose(x),np.array(cov)),x))
-    for n in range(1,len(exp_ret),1):
-        x_cum[n] = x_cum[n-1]+x[n]
     
-    return mu,std,x_cum
+    return mu,std,x
 
 
 
@@ -82,7 +80,7 @@ def efficient_frontier(exp_ret, cov, r_min):
     for r in r_min:
         try:
             x = np.array(optimize_portfolio(exp_ret,cov,r)['x'])
-            [mu,std,w] = stats(x,exp_ret,cov,r)
+            [mu,std,w] = stats(x,exp_ret,cov)
             mu_list = np.append(mu_list, mu)
             std_list = np.append(std_list, std)
             w_list = np.append(w_list, w)
