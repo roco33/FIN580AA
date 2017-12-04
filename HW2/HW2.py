@@ -90,7 +90,7 @@ def main():
 #    exp_ret = exp_ret.append(exp_ret_e[['MSCI EAFE', 'MSCI EM']])
     
     # input expected return
-    exp_ret_data = np.array([0.1051,0.0732,0.0297,0.0769,0.0185,0.1351,0.1386])
+    exp_ret_data = np.array([0.0861,0.0732,0.0297,0.0769,0.0185,0.1351,0.1386])
     exp_ret_index = ['Russell 1000', 'Russell 2000', 'BAML US Corporate Master', 
              'BAML US High Yield', '3-Month Treasury Bill', 'MSCI EAFE', 
              'MSCI EM']
@@ -105,15 +105,14 @@ def main():
     # optimization
     r_min = np.linspace(0,0.2,100)
     
-    [mu,std,w_cum] = efficient_frontier(exp_ret, cov, r_min)
-    std_lower = np.amin(std)
-    std_upper = np.amax(std)
+    [mu_0,std_0,w_0] = efficient_frontier(exp_ret, cov, r_min)
+    std_lower = np.amin(std_0)
+    std_upper = np.amax(std_0)
     
     
-    plt.plot(std,mu)
+    plt.plot(std_0,mu_0)
     plt.show()
-#    plt.figure()
-#    plt.plot(std_list,w_list)
+
     
     stat = np.zeros([1,9]) # 1 + 1 + n
     
@@ -150,15 +149,18 @@ def main():
     
     plt.plot(std, mu, 'r--')
     
-    plt.figure()
-    plt.stackplot(std,w.T)
-    plt.legend(['Russell 1000', 'Russell 2000', 'BAML US Corporate Master', 
+    f, axarr = plt.subplots(1,2, sharey = True)
+    axarr[0].stackplot(std_0,w_0.T)
+    axarr[0].legend(['Russell 1000', 'Russell 2000', 'BAML US Corporate Master', 
+         'BAML US High Yield', '3-Month Treasury Bill', 'MSCI EAFE', 
+         'MSCI EM'])
+    axarr[1].stackplot(std,w.T)
+    axarr[1].legend(['Russell 1000', 'Russell 2000', 'BAML US Corporate Master', 
              'BAML US High Yield', '3-Month Treasury Bill', 'MSCI EAFE', 
              'MSCI EM'])
     plt.show()
     
 
-    
 
 
 
