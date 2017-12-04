@@ -129,7 +129,7 @@ def main():
     stat = stat[np.argsort(stat[:,1])]
     stat = stat[(stat[:,1]<=std_upper) & (stat[:,1]>=std_lower)]
     
-    std_space = np.geomspace(std_lower, std_upper,30)
+    std_space = np.geomspace(std_lower, std_upper,50)
 
     
     w = np.array([]) # n
@@ -149,15 +149,21 @@ def main():
     
     plt.plot(std, mu, 'r--')
     
-    f, axarr = plt.subplots(1,2, sharey = True)
-    axarr[0].stackplot(std_0,w_0.T)
-#    axarr[0].legend(['Russell 1000', 'Russell 2000', 'BAML US Corporate Master', 
-#         'BAML US High Yield', '3-Month Treasury Bill', 'MSCI EAFE', 
-#         'MSCI EM'])
-    axarr[1].stackplot(std,w.T)
-    axarr[1].legend(['Russell 1000', 'Russell 2000', 'BAML US Corporate Master', 
-             'BAML US High Yield', '3-Month Treasury Bill', 'MSCI EAFE', 
-             'MSCI EM'])
+    plt.figure()
+    plt.subplot2grid((2,3),(0,0),colspan=2)
+    plt.stackplot(std_0,w_0.T)
+    plt.legend(['Russell 1000', 'Russell 2000', 'BAML US Corporate Master', 
+     'BAML US High Yield', '3-Month Treasury Bill', 'MSCI EAFE', 
+     'MSCI EM'],loc='center left', bbox_to_anchor=(1, 0.5))
+
+    plt.subplot2grid((2,3),(1,0),colspan=2)
+    plt.stackplot(std,w.T)
+    
+    plt.legend(['Russell 1000', 'Russell 2000', 'BAML US Corporate Master', 
+         'BAML US High Yield', '3-Month Treasury Bill', 'MSCI EAFE', 
+         'MSCI EM'],loc='center left', bbox_to_anchor=(1, 0.5))
+
+
     plt.show()
     
 
