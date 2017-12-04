@@ -116,7 +116,7 @@ def main():
     
     stat = np.zeros([1,9]) # 1 + 1 + n
     
-    for i in range(50):
+    for i in range(100):
         # add randomness
         exp_ret1 = exp_ret + np.random.standard_normal(size = sd.shape) * sd /10
         # optimization
@@ -151,9 +151,9 @@ def main():
     
     f, axarr = plt.subplots(1,2, sharey = True)
     axarr[0].stackplot(std_0,w_0.T)
-    axarr[0].legend(['Russell 1000', 'Russell 2000', 'BAML US Corporate Master', 
-         'BAML US High Yield', '3-Month Treasury Bill', 'MSCI EAFE', 
-         'MSCI EM'])
+#    axarr[0].legend(['Russell 1000', 'Russell 2000', 'BAML US Corporate Master', 
+#         'BAML US High Yield', '3-Month Treasury Bill', 'MSCI EAFE', 
+#         'MSCI EM'])
     axarr[1].stackplot(std,w.T)
     axarr[1].legend(['Russell 1000', 'Russell 2000', 'BAML US Corporate Master', 
              'BAML US High Yield', '3-Month Treasury Bill', 'MSCI EAFE', 
