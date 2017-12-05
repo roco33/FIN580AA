@@ -113,7 +113,7 @@ def main():
     # write csv file
     out_matrix_1 = np.concatenate((np.transpose([std_0]),np.transpose([mu_0]),w_0),axis=1)
     out_df_1 = pd.DataFrame(out_matrix_1, columns=['std', 'mean', 'Russell 1000', 'Russell 2000', 'BAML US Corporate Master', 'BAML US High Yield', '3-Month Treasury Bill', 'MSCI EAFE', 'MSCI EM'])
-    out_df_1.to_csv('out1.csv')
+    out_df_1.to_csv('mean-variance.csv')
 #    np.savetxt('out_1.csv',out_matrix_1,delimiter=',') 
 
     
@@ -153,7 +153,7 @@ def main():
     # write csv file 2
     out_matrix_2 = np.concatenate((np.transpose([std]),np.transpose([mu]),w),axis=1)    
     out_df_2 = pd.DataFrame(out_matrix_2, columns=['std', 'mean', 'Russell 1000', 'Russell 2000', 'BAML US Corporate Master', 'BAML US High Yield', '3-Month Treasury Bill', 'MSCI EAFE', 'MSCI EM'])
-    out_df_2.to_csv('out2.csv')
+    out_df_2.to_csv('resample.csv')
 #    np.savetxt('out_2.csv',out_matrix_2,delimiter=',') 
     
     [exp_ret_BL,cov_BL] = BL_exp_ret(exp_ret, cov)
@@ -162,7 +162,7 @@ def main():
     # write csv file 3
     out_matrix_3 = np.concatenate((np.transpose([std_BL]),np.transpose([mu_BL]),w_BL),axis=1)  
     out_df_3 = pd.DataFrame(out_matrix_3, columns=['std', 'mean', 'Russell 1000', 'Russell 2000', 'BAML US Corporate Master', 'BAML US High Yield', 'MSCI EAFE', 'MSCI EM'])
-    out_df_3.to_csv('out3.csv')
+    out_df_3.to_csv('B-L.csv')
     #    np.savetxt('out_3.csv', out_matrix_3,delimiter=',') 
     
     plt.plot(std_0,mu_0, label = 'Standard Mean-Variance')
