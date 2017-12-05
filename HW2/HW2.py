@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from optPort import efficient_frontier,stats
+from BlackLitterman import BL_exp_ret
 
 
 
@@ -110,8 +111,7 @@ def main():
     std_upper = np.amax(std_0)
     
     
-    plt.plot(std_0,mu_0)
-    plt.show()
+
 
     
     stat = np.zeros([1,9]) # 1 + 1 + n
@@ -147,18 +147,26 @@ def main():
         mu = np.append(mu,mu_1)
         std = np.append(std,std_1)
     
-    plt.plot(std, mu, 'r--')
+    [exp_ret_BL,cov_BL] = BL_exp_ret(exp_ret, cov)
+    [mu_BL, std_BL, w_BL] = efficient_frontier(exp_ret_BL,cov_BL,r_min)
+    
+    plt.plot(std_0,mu_0, label = 'Standard Mean-Variance')
+    plt.plot(std, mu, 'r--', label = 'Resampled')
+    plt.plot(std_BL, mu_BL, 'c:', label = 'Black-Litterman Expected Return')
+    plt.title('Efficient Frontier')
+    plt.legend()
     
     plt.figure()
     plt.subplot2grid((2,3),(0,0),colspan=2)
     plt.stackplot(std_0,w_0.T)
+    plt.title('Standard Mean-Variance')
     plt.legend(['Russell 1000', 'Russell 2000', 'BAML US Corporate Master', 
      'BAML US High Yield', '3-Month Treasury Bill', 'MSCI EAFE', 
      'MSCI EM'],loc='center left', bbox_to_anchor=(1, 0.5))
 
     plt.subplot2grid((2,3),(1,0),colspan=2)
     plt.stackplot(std,w.T)
-    
+    plt.title('Resampled')
     plt.legend(['Russell 1000', 'Russell 2000', 'BAML US Corporate Master', 
          'BAML US High Yield', '3-Month Treasury Bill', 'MSCI EAFE', 
          'MSCI EM'],loc='center left', bbox_to_anchor=(1, 0.5))

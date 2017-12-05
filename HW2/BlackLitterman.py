@@ -45,4 +45,4 @@ def BL_exp_ret(exp_ret,cov):
 #    t_cov = tau * cov_BL
     Omega = np.diag(np.diag(np.dot(np.dot(P,tau * cov_BL),np.transpose(P))))
     
-    return inv(inv(tau*cov_BL) + P.T @ inv(Omega) @ P) @ (inv(tau*cov_BL)@Pi+P.T@inv(Omega)@Q)
+    return inv(inv(tau*cov_BL) + P.T @ inv(Omega) @ P) @ (inv(tau*cov_BL)@Pi+P.T@inv(Omega)@Q), np.array(cov_BL)
