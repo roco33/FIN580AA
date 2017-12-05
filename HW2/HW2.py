@@ -110,8 +110,11 @@ def main():
     std_lower = np.amin(std_0)
     std_upper = np.amax(std_0)
     
-    
-
+    # write csv file
+    out_matrix_1 = np.concatenate((np.transpose([std_0]),np.transpose([mu_0]),w_0),axis=1)
+    out_df_1 = pd.DataFrame(out_matrix_1, columns=['std', 'mean', 'Russell 1000', 'Russell 2000', 'BAML US Corporate Master', 'BAML US High Yield', '3-Month Treasury Bill', 'MSCI EAFE', 'MSCI EM'])
+    out_df_1.to_csv('out1.csv')
+#    np.savetxt('out_1.csv',out_matrix_1,delimiter=',') 
 
     
     stat = np.zeros([1,9]) # 1 + 1 + n
@@ -123,7 +126,8 @@ def main():
         [mu, std, w] = efficient_frontier(exp_ret1, cov, r_min)
         stat_1 = np.concatenate((np.array([mu]).T,np.array([std]).T,w),axis = 1)
         stat = np.concatenate((stat, stat_1), axis = 0)
-#        plt.plot(std,mu)
+
+   
 
     stat = stat[1:,:]
     stat = stat[np.argsort(stat[:,1])]
@@ -135,7 +139,6 @@ def main():
     w = np.array([]) # n
     for i in range(len(std_space)-1):
         w_1 = np.mean(stat[(stat[:,1]>= std_space[i]) & (stat[:,1] < std_space[i+1]),2:],axis=0)
-#        print(w_1)
         w = np.append(w,w_1)
         
     w = np.reshape(w, (-1,7))
@@ -146,9 +149,21 @@ def main():
         [mu_1,std_1,w_1] = stats(w[j,:],exp_ret,cov)
         mu = np.append(mu,mu_1)
         std = np.append(std,std_1)
+
+    # write csv file 2
+    out_matrix_2 = np.concatenate((np.transpose([std]),np.transpose([mu]),w),axis=1)    
+    out_df_2 = pd.DataFrame(out_matrix_2, columns=['std', 'mean', 'Russell 1000', 'Russell 2000', 'BAML US Corporate Master', 'BAML US High Yield', '3-Month Treasury Bill', 'MSCI EAFE', 'MSCI EM'])
+    out_df_2.to_csv('out2.csv')
+#    np.savetxt('out_2.csv',out_matrix_2,delimiter=',') 
     
     [exp_ret_BL,cov_BL] = BL_exp_ret(exp_ret, cov)
     [mu_BL, std_BL, w_BL] = efficient_frontier(exp_ret_BL,cov_BL,r_min)
+    
+    # write csv file 3
+    out_matrix_3 = np.concatenate((np.transpose([std_BL]),np.transpose([mu_BL]),w_BL),axis=1)  
+    out_df_3 = pd.DataFrame(out_matrix_3, columns=['std', 'mean', 'Russell 1000', 'Russell 2000', 'BAML US Corporate Master', 'BAML US High Yield', 'MSCI EAFE', 'MSCI EM'])
+    out_df_3.to_csv('out3.csv')
+    #    np.savetxt('out_3.csv', out_matrix_3,delimiter=',') 
     
     plt.plot(std_0,mu_0, label = 'Standard Mean-Variance')
     plt.plot(std, mu, 'r--', label = 'Resampled')
@@ -174,10 +189,6 @@ def main():
 
     plt.show()
     
-
-
-
-
 
 
 if __name__ == '__main__':
