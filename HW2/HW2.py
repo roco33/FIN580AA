@@ -91,7 +91,7 @@ def main():
 #    exp_ret = exp_ret.append(exp_ret_e[['MSCI EAFE', 'MSCI EM']])
     
     # input expected return
-    exp_ret_data = np.array([0.0861,0.0732,0.0297,0.0769,0.0185,0.1351,0.1386])
+    exp_ret_data = np.array([0.0861,0.0732,0.0297,0.0449,0.0185,0.1351,0.1386])
     exp_ret_index = ['Russell 1000', 'Russell 2000', 'BAML US Corporate Master', 
              'BAML US High Yield', '3-Month Treasury Bill', 'MSCI EAFE', 
              'MSCI EM']
@@ -104,7 +104,7 @@ def main():
     cov = data.cov()
     
     # optimization
-    r_min = np.linspace(0,0.2,100)
+    r_min = np.linspace(0,0.2,200)
     
     [mu_0,std_0,w_0] = efficient_frontier(exp_ret, cov, r_min)
     std_lower = np.amin(std_0)
@@ -133,7 +133,7 @@ def main():
     stat = stat[np.argsort(stat[:,1])]
     stat = stat[(stat[:,1]<=std_upper) & (stat[:,1]>=std_lower)]
     
-    std_space = np.geomspace(std_lower, std_upper,50)
+    std_space = np.geomspace(std_lower, std_upper,100)
 
     
     w = np.array([]) # n
